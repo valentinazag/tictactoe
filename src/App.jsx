@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 
 function Square({ value, onSquareClick }) {
@@ -32,36 +31,41 @@ function Board({ xIsNext, squares, onPlay, onRestart }) {
 	let restartButton;
 	if (winner) {
 		status = `"Winner: ${winner} `;
-	
-	}
-	else if(tie(squares)){
+	} else if (tie(squares)) {
 		status = "I'ts a tie!";
-	 	restartButton = (
-		<button type="button" className="restart" onClick={onRestart}>
-		Restart Game
-		</button>
-		)
-	}
-	else {
+		restartButton = (
+			<button type="button" className="restart" onClick={onRestart}>
+				Restart Game
+			</button>
+		);
+	} else {
 		status = `Next player: ${xIsNext ? "X" : "O"}`;
 	}
 
-
-	const rowsBoard = [squares.slice(0, 3), squares.slice(3, 6), squares.slice(6, 9)].map( //genero las rows con slice de 3
+	const rowsBoard = [
+		squares.slice(0, 3),
+		squares.slice(3, 6),
+		squares.slice(6, 9),
+	].map(
+		//genero las rows con slice de 3
 		(row, rowIn) => {
 			const key = `fila-${rowIn}`;
 			return (
 				<div key={key} className="rows">
 					{row.map((_, column) => {
 						// cuadrados de array row y sus indices
-						const square = rowIn * 3 + column; 
+						const square = rowIn * 3 + column;
 						return (
-							<Square key={square} value={squares[square]} onSquareClick={() => handleClick(square)}/> 
+							<Square
+								key={square}
+								value={squares[square]}
+								onSquareClick={() => handleClick(square)}
+							/>
 						);
 					})}
 				</div>
 			);
-		}
+		},
 	);
 
 	return (
@@ -74,7 +78,7 @@ function Board({ xIsNext, squares, onPlay, onRestart }) {
 }
 
 function tie(squares) {
-  return squares.every(square => square !== null);
+	return squares.every((square) => square !== null);
 }
 
 function calculateWinner(squares) {
@@ -135,10 +139,10 @@ export default function Game() {
 			</li>
 		);
 	});
-	function handlerRestart(){
-	setHistory([Array(9).fill(null)]);
-	setCurrentMove(0);
-}
+	function handlerRestart() {
+		setHistory([Array(9).fill(null)]);
+		setCurrentMove(0);
+	}
 
 	//abajo le paso a board 3 props que para q ellos la controlen
 	//xIsNext = de quien es el turno, squares = tablero atual,
@@ -146,7 +150,12 @@ export default function Game() {
 	return (
 		<div className="game">
 			<div className="game-board">
-				<Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} onRestart={handlerRestart} />
+				<Board
+					xIsNext={xIsNext}
+					squares={currentSquares}
+					onPlay={handlePlay}
+					onRestart={handlerRestart}
+				/>
 			</div>
 			<div className="game-info">
 				<ol>{moves}</ol>
