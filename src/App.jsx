@@ -10,7 +10,6 @@ function Square({ value, onSquareClick }) {
 
 function Board({ xIsNext, squares, onPlay }) {
 	//recibe los props
-
 	function handleClick(i) {
 		//cada vezz q se hace click
 		if (calculateWinner(squares) || squares[i]) {
@@ -31,41 +30,46 @@ function Board({ xIsNext, squares, onPlay }) {
 	let status;
 	if (winner) {
 		status = `"Winner: ${winner} `;
-	} else {
+	
+	}
+	else if(tie(squares)){
+		status = "I'ts a tie!";
+	}
+	else {
 		status = `Next player: ${xIsNext ? "X" : "O"}`;
 	}
 
-	let contador = 0;
-	const WIDTH = 3;
-	
-	const filasTabla = new Array(WIDTH).fill(0).map((_, fila) => {
-		//estoy creando un array de 3 elementos(las filas)
-		// el _ sig q recibe alo pero no importa que, pq no es tipado estricto
-		const cuadradosFila = new Array(WIDTH).fill(0).map((_, columna) => {
-			//creo array de cuadrados dentro de la fila
-			const cuadrado = contador++; //le doy numero al cuadrado
+	const rowsBoard = [squares.slice(0, 3), squares.slice(3, 6), squares.slice(6, 9)].map( //genero las rows con slice de 3
+		(row, rowIn) => {
+			const key = `fila-${rowIn}`;
 			return (
-				<Square
-					key={cuadrado}
-					value={squares[cuadrado]}
-					onSquareClick={() => handleClick(cuadrado)}
-				/> //mando a render el cuadrado con sus caract
+				<div key={key} className="rows">
+					{row.map((_, column) => {
+						// cuadrados de arrayl row y sus indices
+						const square = rowIn * 3 + column; 
+						return (
+							<Square key={square} value={squares[square]} onSquareClick={() => handleClick(square)}/> 
+						);
+					})}
+				</div>
 			);
-		});
-		const key = `fila-${fila}`;
-		return (
-			<div key={key} className="filas">
-				{cuadradosFila}
-			</div>
-		);
-	});
+		}
+	);
+
 	return (
 		<>
 			<div className="status">{status}</div>
-			{filasTabla}
+			{rowsBoard}
 		</>
 	);
 }
+
+function tie(squares) {
+  return squares.every(square => square !== null);
+}
+
+  
+
 
 function calculateWinner(squares) {
 	const lines = [
@@ -90,7 +94,7 @@ function calculateWinner(squares) {
 export default function Game() {
 	const [history, setHistory] = useState([Array(9).fill(null)]); //array con un solo item, que es un
 	const [currentMove, setCurrentMove] = useState(0); //numero del turno en el que estamos
-	const xIsNext = currentMove % 2 === 0; //determina quien juega ahora, si e spar X si es impar 0;
+	const xIsNext = currentMove % 2 === 0; //determina quien juega ahora, si e spar X si es impar O;
 	const currentSquares = history[currentMove]; //tablero actual
 
 	function handlePlay(nextSquares) {
@@ -99,7 +103,7 @@ export default function Game() {
 		const nextHistory = [...history.slice(0, currentMove + 1), nextSquares]; // aca 0, current move mas 1
 		//"corta lo sobrante,mov que vamos a
 		// eliminar para reemplazar con nextSquares cambiado la linea de tiempo"
-		setHistory(nextHistory); //guardo nuevo historual
+		setHistory(nextHistory); //guardo nuevo historial
 		setCurrentMove(nextHistory.length - 1); //guardo tablero actual
 	} //llamada por el board para actualizar el juego
 
