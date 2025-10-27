@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 
 function Square({ value, onSquareClick }) {
@@ -8,7 +9,7 @@ function Square({ value, onSquareClick }) {
 	);
 }
 
-function Board({ xIsNext, squares, onPlay }) {
+function Board({ xIsNext, squares, onPlay, onRestart }) {
 	//recibe los props
 	function handleClick(i) {
 		//cada vezz q se hace click
@@ -28,16 +29,23 @@ function Board({ xIsNext, squares, onPlay }) {
 
 	const winner = calculateWinner(squares);
 	let status;
+	let restartButton;
 	if (winner) {
 		status = `"Winner: ${winner} `;
 	
 	}
 	else if(tie(squares)){
 		status = "I'ts a tie!";
+	 	restartButton = (
+		<button type="button" className="restart" onClick={onRestart}>
+		Restart Game
+		</button>
+		)
 	}
 	else {
 		status = `Next player: ${xIsNext ? "X" : "O"}`;
 	}
+
 
 	const rowsBoard = [squares.slice(0, 3), squares.slice(3, 6), squares.slice(6, 9)].map( //genero las rows con slice de 3
 		(row, rowIn) => {
@@ -45,7 +53,7 @@ function Board({ xIsNext, squares, onPlay }) {
 			return (
 				<div key={key} className="rows">
 					{row.map((_, column) => {
-						// cuadrados de arrayl row y sus indices
+						// cuadrados de array row y sus indices
 						const square = rowIn * 3 + column; 
 						return (
 							<Square key={square} value={squares[square]} onSquareClick={() => handleClick(square)}/> 
@@ -59,6 +67,7 @@ function Board({ xIsNext, squares, onPlay }) {
 	return (
 		<>
 			<div className="status">{status}</div>
+			{restartButton}
 			{rowsBoard}
 		</>
 	);
@@ -67,9 +76,6 @@ function Board({ xIsNext, squares, onPlay }) {
 function tie(squares) {
   return squares.every(square => square !== null);
 }
-
-  
-
 
 function calculateWinner(squares) {
 	const lines = [
@@ -129,6 +135,10 @@ export default function Game() {
 			</li>
 		);
 	});
+	function handlerRestart(){
+	setHistory([Array(9).fill(null)]);
+	setCurrentMove(0);
+}
 
 	//abajo le paso a board 3 props que para q ellos la controlen
 	//xIsNext = de quien es el turno, squares = tablero atual,
@@ -136,7 +146,7 @@ export default function Game() {
 	return (
 		<div className="game">
 			<div className="game-board">
-				<Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
+				<Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} onRestart={handlerRestart} />
 			</div>
 			<div className="game-info">
 				<ol>{moves}</ol>
